@@ -1,40 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>.35.6"></script>
-<style>
-body {font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f7f7f7; display: flex; justify-content: center; padding: 30px;}
-.card {background: white; padding: 20px; border-radius: 16px; width: 360px; box-shadow: 0 10px 25px rgba(0,0,0,0.08);}
-h2 {margin-bottom: 12px;}
-label {font-size: 13px; font-weight: 600;}
-.subtext {font-size: 12px; color: #777; margin-bottom: 10px;}
-input, select {width: 100%; padding: 10px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px; box-sizing: border-box;}
-.checkbox-group {margin-bottom: 12px;}
-.checkbox-group label {display: flex; align-items: center; font-size: 14px; margin-bottom: 6px; cursor: pointer;}
-.checkbox-group input {margin-right: 10px; width: auto;}
-.select-all-btn {background: #f0f0f0; padding: 8px 12
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bill Splitter Pro+</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6"></script>
 <style>
-body {font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f7f7f7; display: flex; justify-content: center; padding: 30px;}
-.card {background: white; padding: 20px; border-radius: 16px; width: 360px; box-shadow: 0 10px 25px rgba(0,0,0,0.08);}
-h2 {margin-bottom: 12px;}
-label {font-size: 13px; font-weight: 600;}
+* {box-sizing: border-box;}
+body {font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f7f7f7; display: flex; justify-content: center; padding: 15px; margin: 0;}
+.card {background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.08);}
+h2 {margin-top: 0; margin-bottom: 12px; font-size: 20px;}
+h3 {font-size: 16px; margin: 10px 0;}
+label {font-size: 13px; font-weight: 600; display: block; margin-bottom: 4px;}
 .subtext {font-size: 12px; color: #777; margin-bottom: 10px;}
-input, select {width: 100%; padding: 10px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px; box-sizing: border-box;}
+input, select {width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 16px;}
+input:focus, select:focus {outline: none; border-color: #333; box-shadow: 0 0 5px rgba(0,0,0,0.1);}
 .checkbox-group {margin-bottom: 12px;}
-.checkbox-group label {display: flex; align-items: center; font-sizepx; border-radius: 6px; border: 1px solid #ddd; cursor: pointer; font-size: 13px; margin-bottom: 10px; width: auto;}
-.select-all-btn:hover {background: #e0e0e0;}
-button {width: 100%; padding: 12px; border-radius: 10px; border: none; background: black; color: white; font-weight: bold; margin-top: 6px; cursor: pointer;}
-button:hover {background: #333;}
+.checkbox-group label {display: flex; align-items: center; font-size: 14px; margin-bottom: 8px; cursor: pointer; font-weight: normal;}
+.checkbox-group input {margin-right: 10px; width: auto; margin-bottom: 0;}
+.select-all-btn {background: #f0f0f0; padding: 10px 12px; border-radius: 6px; border: 1px solid #ddd; cursor: pointer; font-size: 13px; margin-bottom: 10px; width: 100%; font-weight: 600;}
+.select-all-btn:active {background: #e0e0e0;}
+button {width: 100%; padding: 14px; border-radius: 10px; border: none; background: black; color: white; font-weight: bold; margin-top: 8px; cursor: pointer; font-size: 14px;}
+button:active {background: #333;}
 .btn-danger {background: #dc3545;}
-.btn-danger:hover {background: #c82333;}
-.section {margin-top: 16px; font-size: 14px;}
-.status {padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 12px;}
-.status.success {background: #d4edda; color: #155724;}
-.status.error {background: #f8d7da; color: #721c24;}
+.btn-danger:active {background: #c82333;}
+.section {margin-top: 16px; font-size: 14px; line-height: 1.5;}
+.status {padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 12px; animation: slideIn 0.3s ease;}
+.status.success {background: #d4edda; color: #155724; border: 1px solid #c3e6cb;}
+.status.error {background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;}
 .admin-section {margin-top: 20px; padding-top: 20px; border-top: 2px solid #ddd;}
+@keyframes slideIn {from {opacity: 0; transform: translateY(-10px);} to {opacity: 1; transform: translateY(0);}}
+@media (max-width: 480px) {
+  body {padding: 10px;}
+  .card {padding: 16px;}
+  h2 {font-size: 18px; margin-bottom: 10px;}
+  h3 {font-size: 14px;}
+  label {font-size: 12px;}
+  input, select {padding: 10px; font-size: 16px; margin-bottom: 10px;}
+  button {padding: 12px; font-size: 13px; margin-top: 6px;}
+  .select-all-btn {padding: 8px; font-size: 12px; margin-bottom: 8px;}
+}
 </style>
 </head>
 <body>
@@ -42,41 +47,6 @@ button:hover {background: #333;}
 <h2>💸 Split Bill</h2>
 
 <label>Bill title</label>
-<input type="text" id="title" placeholder="e.g., Lunch, Groceries">
-
-<label>Amount (SGD)</label>
-<div class="subtext">If: 14px; margin-bottom: 6px; cursor: pointer;}
-.checkbox-group input {margin-right: 10px; width: auto;}
-.select-all-btn {background: #f0f0f0; padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd; cursor: pointer; font-size: 13px; margin-bottom: 10px; width: auto;}
-.select-all-btn:hover {background: #e0e0e0;}
-button {width: 100%; padding: 12px; border-radius: 10px; border: none; background: black; color: white; font-weight: bold; margin-top: 6px; cursor: pointer;}
-button:hover {background: #333;}
-.btn-danger {background: #dc3545;}
-.btn-danger:hover {background: #c82333;}
-.section {margin-top: 16px; font-size: 14px;}
-.status {padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 12px;}
-.status.success {background: #d4edda; color: #155724;}
-.status.error {background: #f8d7da; color: #721c24;}
-.admin-section {margin-top: 20px; padding-top: 20px; border-top: 2px solid #ddd;}
-</style>
-</head>
-<body>
-<div class="card">
-<h2>💸 Split Bill</h2>
-
-<label> you wish to log this expenditure in RMB as a placeholder, please annotate currency clearly (but please just try to log in SGD la!)</div>
-<input type="number" id="amount" step="0.01" min="0">
-
-<label>Paid by</label>
-<select id="paidBy" onchange="autoSelectPayer()"></select>
-
-<label>Bill to</label>
-<div class="subtext">Select everyone whom you want to bill to/split this bill with, please rem to check your own name if you are part of the sharing.</div>
-<button class="select-all-btn" onclick="toggleSelectAll()">📋 Select All / Deselect All</button>
-<div class="checkbox-group" id="billTo"></div>
-<div class="checkbox-group"><label><input type="checkbox" id="excludeSelf"> Exclude payer from split</label></div>
-
-<button onclick="addBill()">Add Bill</button>Bill title</label>
 <input type="text" id="title" placeholder="e.g., Lunch, Groceries">
 
 <label>Amount (SGD)</label>
@@ -90,22 +60,10 @@ button:hover {background: #333;}
 <div class="subtext">Select everyone whom you want to bill to/split this bill with, please rem to check your own name if you are part of the sharing.</div>
 <button class="select-all-btn" onclick="toggleSelectAll()">📋 Select All / Deselect All</button>
 <div class="checkbox-group" id="billTo"></div>
-<div
-<button onclick="downloadHistoryLog()">📥 Download History Log</button>
-<div id="status"></div>
-<div class="section" id="latest"></div>
 
-<div class="admin-section">
-<h3>🔐 Admin Panel</h3>
-<button class="btn-danger" onclick="promptAdminClearData()">🗑️ Clear All Data (Admin Only)</button>
+<div class="checkbox-group">
+<label><input type="checkbox" id="excludeSelf"> Exclude payer from split</label>
 </div>
-
-</div>
-<script>
-// Supabase Configuration
-const SUPABASE_URL = 'https://wwcnhaummenjhpmndwoq.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_-Cb0_t8Bzu4y0e0xWYF1oA_-Jwa7b80';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); class="checkbox-group"><label><input type="checkbox" id="excludeSelf"> Exclude payer from split</label></div>
 
 <button onclick="addBill()">Add Bill</button>
 <button onclick="downloadHistoryLog()">📥 Download History Log</button>
@@ -114,40 +72,14 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); class
 
 <div class="admin-section">
 <h3>🔐 Admin Panel</h3>
-<button class="btn-danger" onclick="promptAdminClearData()">🗑️ Clear All Data (Admin Only)</button>
+<button class="btn-danger" onclick="promptAdminClearData()">🗑️ Clear All Data</button>
 </div>
 
 </div>
 <script>
 // Supabase Configuration
 const SUPABASE_URL = 'https://wwcnhaummenjhpmndwoq.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_-Cb0_t8Bzu4y0e0xWYF1oA_-Jwa
-
-const people = ["Josh","Chloe","CK","Janice","Travis","Rach","Emma","Weng"];
-const ADMIN_PASSWORD = "Chloe123";
-let bills = [];
-let balances = {};
-
-people.forEach(p => {balances[p] = 0;});
-document.getElementById("paidBy").innerHTML = '<option value="">Select</option>' + people.map(p => `<option>${p}</option>`).join("");
-document.getElementById("billTo").innerHTML = people.map(p => `<label><input type="checkbox" value="${p}"> ${p}</label>`).join("");
-
-// Load bills from Supabase on startup
-async function loadBillsFromSupabase() {
-  try {
-    const { data, error } = await supabase
-      .from('bills')
-      .select('*')
-      .order('created_at', { ascending: true });
-    
-    if (error) throw error;
-    
-    bills = data || [];
-    recalculateBalances();
-    render();
-  } catch (error) {
-    console.error('Error loading bills:', error);
-    showStatus('⚠️ Could not sync with cloud. Using local data.7b80';
+const SUPABASE_KEY = 'sb_publishable_-Cb0_t8Bzu4y0e0xWYF1oA_-Jwa7b80';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const people = ["Josh","Chloe","CK","Janice","Travis","Rach","Emma","Weng"];
@@ -162,18 +94,14 @@ document.getElementById("billTo").innerHTML = people.map(p => `<label><input typ
 // Load bills from Supabase on startup
 async function loadBillsFromSupabase() {
   try {
-    const { data, error } = await supabase
-      .from('bills')
-      .select('*')
-      .order('created_at', { ascending: true });
-    
+    const { data, error } = await supabase.from('bills').select('*').order('created_at', { ascending: true });
     if (error) throw error;
-    
     bills = data || [];
     recalculateBalances();
     render();
   } catch (error) {
-    console.error('Error', 'error');
+    console.error('Error loading bills:', error);
+    showStatus('⚠️ Could not sync with cloud. Using local data.', 'error');
     loadFromLocalStorage();
   }
 }
@@ -202,69 +130,6 @@ function toggleSelectAll() {const checkboxes = document.querySelectorAll('#billT
 function showStatus(message, type = 'success') {const statusEl = document.getElementById('status'); statusEl.innerHTML = `<div class="status ${type}">${message}</div>`; setTimeout(() => {statusEl.innerHTML = '';}, 3000);}
 
 async function addBill() {
-  const amount loading bills:', error);
-    showStatus('⚠️ Could not sync with cloud. Using local data.', 'error');
-    loadFromLocalStorage();
-  }
-}
-
-function recalculateBalances() {
-  people.forEach(p => {balances[p] = 0;});
-  bills.forEach(bill => {
-    const share = bill.amount / bill.split_group.length;
-    bill.split_group.forEach(person => {
-      if (person !== bill.payer) {
-        balances[person] -= share;
-        balances[bill.payer] += share;
-      }
-    });
-  });
-}
-
-function loadFromLocalStorage() {
-  bills = JSON.parse(localStorage.getItem("bills")) || [];
-  balances = JSON.parse(localStorage.getItem("balances")) || {};
-  people.forEach(p => {if (!(p in balances)) balances[p] = 0;});
-}
-
-function autoSelectPayer() {const payer = document.getElementById("paidBy").value; document.querySelectorAll('#billTo input').forEach(cb => {if (cb.value === payer) cb.checked = true;});}
-function toggleSelectAll() {const checkboxes = document.querySelectorAll('#billTo input'); const allChecked = Array.from(checkboxes).every(cb => cb.checked); checkboxes.forEach(cb => cb.checked = !allChecked);}
-function showStatus(message, type = 'success') {const statusEl = document.getElementById(' = parseFloat(document.getElementById("amount").value);
-  const title = document.getElementById("title").value || "Untitled";
-  const payer = document.getElementById("paidBy").value;
-  const excludeSelf = document.getElementById("excludeSelf").checked;
-  const selected = Array.from(document.querySelectorAll('#billTo input:checked')).map(cb => cb.value);
-  
-  if (!amount || !payer || selected.length === 0) {showStatus("Fill all fields pls 🙃", 'error'); return;}
-  
-  let splitGroup = [...selected];
-  if (excludeSelf) {splitGroup = splitGroup.filter(p => p !== payer);}
-  if (splitGroup.length === 0) {showStatus("No one to split with!", 'error'); return;}
-  
-  const billData = {
-    title: title,
-    payer: payer,
-    amount: amount,
-    split_group: splitGroup,
-    created_at: new Date().toISOString()
-  };
-  
-  try {
-    const { data, error } = await supabase
-      .from('bills')
-      .insert([billData]);
-    
-    if (error) throw error;
-    
-    bills.push(billData);
-    recalculateBalances();
-    showStatus("✅ Bill added & synced!", 'success');
-  } catch (error) {
-    console.error('Error saving bill:', error);
-    showStatus("✅ Bill added locally (sync pending)", 'success');
-    billsstatus'); statusEl.innerHTML = `<div class="status ${type}">${message}</div>`; setTimeout(() => {statusEl.innerHTML = '';}, 3000);}
-
-async function addBill() {
   const amount = parseFloat(document.getElementById("amount").value);
   const title = document.getElementById("title").value || "Untitled";
   const payer = document.getElementById("paidBy").value;
@@ -277,47 +142,14 @@ async function addBill() {
   if (excludeSelf) {splitGroup = splitGroup.filter(p => p !== payer);}
   if (splitGroup.length === 0) {showStatus("No one to split with!", 'error'); return;}
   
-  const billData = {
-    title: title,
-    payer: payer,
-    amount: amount,
-    split_group: splitGroup,
-    created_at: new Date().toISOString()
-  };
+  const billData = {title: title, payer: payer, amount: amount, split_group: splitGroup, created_at: new Date().toISOString()};
   
   try {
-    const { data, error } = await supabase
-      .from('bills')
-      .insert([billData]);
-    
+    const { error } = await supabase.from('bills').insert([billData]);
     if (error) throw error;
-    
     bills.push(billData);
     recalculateBalances();
-    showStatus("✅ Bill added & syn.push(billData);
-    recalculateBalances();
-  }
-  
-  localStorage.setItem("bills", JSON.stringify(bills));
-  localStorage.setItem("balances", JSON.stringify(balances));
-  document.getElementById("amount").value = '';
-  document.getElementById("title").value = '';
-  document.getElementById("paidBy").value = '';
-  document.querySelectorAll('#billTo input').forEach(cb => cb.checked = false);
-  document.getElementById("excludeSelf").checked = false;
-  render();
-}
-
-function render() {
-  if (bills.length === 0) {document.getElementById("latest").innerHTML = ''; return;}
-  const last = bills[bills.length - 1];
-  document.getElementById("latest").innerHTML = `<strong>Latest:</strong><br>${last.title} — ${last.payer} paid SGD ${last.amount.toFixed(2)}`;
-}
-
-function downloadHistoryLog() {
-  if (bills.length === 0) {showStatus("No bills to download!", 'error'); return;}
-  let csvContent = "BILL SPLITTER HISTORY LOG\nGenerated: " + new Date().toLocaleString() + "\n\n=== DETAILED BILL ENTRIES ===\nBill Title,Paid By,Amount (SGD),Split With,Share Per Person,Date & Time\n";
-  bills.forEach((ced!", 'success');
+    showStatus("✅ Bill added & synced!", 'success');
   } catch (error) {
     console.error('Error saving bill:', error);
     showStatus("✅ Bill added locally (sync pending)", 'success');
@@ -342,6 +174,5 @@ function render() {
 }
 
 function downloadHistoryLog() {
-  if (bills.length === 0) {showStatus("No bills to download!", 'error'); return;}
-  let csvContent = "BILL SPLITTER HISTORY LOG\nGenerated: " + new Date().toLocaleString() + "\n\n=== DETAILED
+  if (bills.length === 0)
 
