@@ -242,7 +242,15 @@ async function clearAllData() {
     showStatus("❌ Error clearing data. Try again.", 'error');
   }
 }
-
+🔥 Final correct placement:
+// 🔥 REALTIME SYNC (ADD THIS BLOCK HERE)
+supabase
+  .from('bills')
+  .on('*', payload => {
+    console.log('Change received!', payload);
+    loadBillsFromSupabase();
+  })
+  .subscribe();
 // Load bills on startup
 loadBillsFromSupabase();
 </script>
