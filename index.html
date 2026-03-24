@@ -21,7 +21,12 @@ body {
   box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
 
-label { font-size: 13px; font-weight: 600; }
+h2 { margin-bottom: 12px; }
+
+label {
+  font-size: 13px;
+  font-weight: 600;
+}
 
 .subtext {
   font-size: 12px;
@@ -35,15 +40,39 @@ input, select {
   margin-bottom: 12px;
   border-radius: 8px;
   border: 1px solid #ddd;
+  font-size: 14px;
+}
+
+/* ✅ Checkbox alignment fix */
+.checkbox-group {
+  margin-bottom: 12px;
 }
 
 .checkbox-group label {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  font-size: 14px;
   font-weight: normal;
+  margin-bottom: 6px;
 }
 
-.checkbox-group input { margin-right: 8px; }
+.checkbox-group input {
+  margin-right: 10px;
+  width: auto;
+}
+
+/* ✅ Toggle aligned + same font */
+.toggle {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+.toggle input {
+  margin-right: 10px;
+}
 
 button {
   width: 100%;
@@ -54,6 +83,7 @@ button {
   color: white;
   font-weight: bold;
   margin-top: 6px;
+  cursor: pointer;
 }
 
 .section {
@@ -87,8 +117,11 @@ Select everyone whom you want to bill to/split this bill with, please rem to che
 
 <div class="checkbox-group" id="billTo"></div>
 
-<div>
-  <input type="checkbox" id="excludeSelf"> Exclude payer from split
+<div class="toggle">
+  <label>
+    <input type="checkbox" id="excludeSelf">
+    Exclude payer from split
+  </label>
 </div>
 
 <button onclick="addBill()">Add Bill</button>
@@ -106,16 +139,17 @@ const people = ["Josh","Chloe","CK","Janice","Travis","Rach","Emma","Weng"];
 let bills = JSON.parse(localStorage.getItem("bills")) || [];
 let balances = JSON.parse(localStorage.getItem("balances")) || {};
 
-// init balances if empty
+// init balances
 people.forEach(p => {
   if (!(p in balances)) balances[p] = 0;
 });
 
-// populate dropdown + checkboxes
+// populate dropdown
 const paidByEl = document.getElementById("paidBy");
 paidByEl.innerHTML = '<option value="">Select</option>' +
   people.map(p => `<option>${p}</option>`).join("");
 
+// populate checkboxes
 const billToEl = document.getElementById("billTo");
 billToEl.innerHTML = people.map(p =>
   `<label><input type="checkbox" value="${p}"> ${p}</label>`
@@ -173,9 +207,8 @@ function render() {
 
   const last = bills[bills.length - 1];
   document.getElementById("latest").innerHTML =
-    `<strong>Latest:</strong><br>${last.title} — ${last.payer} paid SGD ${last.amount}`;
+    `<strong>Latest:</strong><br>${last.title} — ${last.payer} paid SGD ${last.amount.toFixed(2)}`;
 
-  // balances
   let balHTML = "<strong>Balances:</strong><br>";
   for (let p in balances) {
     if (Math.abs(balances[p]) > 0.01) {
@@ -187,7 +220,7 @@ function render() {
   computeSettlement();
 }
 
-// 💡 settle-up logic (min transactions)
+// settle-up logic
 function computeSettlement() {
   let creditors = [];
   let debtors = [];
