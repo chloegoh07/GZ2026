@@ -42,6 +42,10 @@ button {
 .section {
   margin-top: 16px;
 }
+#feedback {
+  color: green;
+  margin-top: 8px;
+}
 </style>
 </head>
 <body>
@@ -60,17 +64,18 @@ button {
 </div>
 
 <button onclick="addBill()">Add Bill</button>
+<div id="feedback"></div>
 
 <div class="section" id="balances"></div>
 <div class="section" id="settle"></div>
 
 <script>
-// 🔥 PASTE YOUR KEYS HERE
+// 🔥 Supabase keys (added)
 const SUPABASE_URL = "https://wwcnhaummenjhpmndwoq.supabase.co";
 const SUPABASE_KEY = "sb_publishable_-Cb0_t8Bzu4y0e0xWYF1oA_-Jwa7b80";
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// List of friends
+// Friends list
 const people = ["Josh","Chloe","CK","Janice","Travis","Rach","Emma","Weng"];
 let balances = {};
 people.forEach(p => balances[p] = 0);
@@ -99,12 +104,30 @@ async function addBill() {
     return;
   }
 
-  await db.from("bills").insert([{
-    title,
-    payer,
-    amount,
-    split_group: JSON.stringify(group)
-  }]);
+  try {
+    await db.from("bills").insert([{
+      title,
+      payer,
+      amount,
+      split_group: JSON.stringify(group)
+    }]);
+
+    // ✅ Feedback message
+    const feedback = document.getElementById("feedback");
+    feedback.innerText = "Submitted!";
+    setTimeout(() => feedback.innerText = "", 2000);
+
+    // ✅ Reset input fields to default
+    document.getElementById("amount").value = "";
+    document.getElementById("title").value = "";
+    document.getElementById("payer").selectedIndex = 0;
+    document.getElementById("exclude").checked = false;
+    document.querySelectorAll('#group input').forEach(cb => cb.checked = false);
+
+  } catch (error) {
+    console.error(error);
+    alert("Error submitting bill, check console for details.");
+  }
 }
 
 // Load bills and calculate balances
