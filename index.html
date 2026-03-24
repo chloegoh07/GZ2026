@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Live Bill Splitter</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<style>
+body {
+  font-family: -apple-system, sans-serif;
+  background: #f7f7f7;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  width: 360px;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.checkbox-group input {
+  margin-right: 10px;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: black;
+  color: white;
+  border-radius: 10px;
+}
+
+.section {
+  margin-top: 16px;
+}
+</style>
+</head>
+
+<body>
+<div class="card">
+
+<h2>💸 Live Split</h2>
+
+<input id="amount" placeholder="Amount SGD" type="number">
+<input id="title" placeholder="Bill title">
+
+<select id="payer"></select>
+
+<div class="checkbox-group" id="group"></div>
+
+<div class="checkbox-group">
+  <label><input type="checkbox" id="exclude">Exclude payer</label>
+</div>
+
+<button onclick="addBill()">Add Bill</button>
+
+<div class="section" id="balances"></div>
+<div class="section" id="settle"></div>
+
+</div>
+
+<script>
+// 🔥 PASTE YOUR KEYS HERE
+const SUPABASE_URL = "YOUR_URL";
+const SUPABASE_KEY = "YOUR_ANON_KEY";
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const people = ["Josh","Chloe","CK","Janice","Travis","Rach","Emma","Weng"];
+let balances = {};
+
+people.forEach(p => balances[p] = 0);
+
+// UI init
+document.getElementById("payer").innerHTML =
+  people.map(p => `<option>${p}</option>`).join("");
+
+document.getElementById("group").innerHTML =
+  people.map(p => `<label><input type="checkbox" value="${p}">${p}</label>`).join("");
+
+// add bill
+async function addBill() {
+  const amount = parseFloat(document.getElementById("amount").value);
+  const title = document.getElementById("title").value || "Untitled";
+  const payer = document.getElementById("payer").value;
+  const exclude = document.getElementById("exclude").checked;
+
+  const selected = Array.from(document.querySelectorAll('#group input:checked'))
+    .map(cb => cb.value);
+
+  let group = exclude ? selected.filter(p => p !== payer) : selected;
+
+  await db.from("bills").insert([{
+    title,
+    payer,
+    amount,
+    split_group: JSON.stringify(group)
+  }]);
+}
+
+// fetch + live updates
+async function loadBills() {
+  const { data } = await db.from("bills").select("*");
+
+  balances = {};
+  people.forEach(p => balances[p] = 0);
+
+  data.forEach(b => {
+    const group = JSON.parse(b.split_group);
+    const share = b.amount / group.length;
+
+    group.forEach(p => {
+      if (p !== b.payer) {
+        balances[p] -= share;
+        balances[b.payer] += share;
+      }
+    });
+  });
+
+  render();
+}
+
+function render() {
+  let balHTML = "<strong>Balances:</strong><br>";
+  for (let p in balances) {
+    if (Math.abs(balances[p]) > 0.01) {
+      balHTML += `${p}: SGD ${balances[p].toFixed(2)}<br>`;
+    }
+  }
+  document.getElementById("balances").innerHTML = balHTML;
+
+  settle();
+}
+
+// settle logic
+function settle() {
+  let c=[], d=[];
+  for (let p in balances) {
+    let amt = balances[p];
+    if (amt > 0) c.push({p, amt});
+    if (amt < 0) d.push({p, amt});
+  }
+
+  let res = [];
+  while (c.length && d.length) {
+    let pay = Math.min(c[0].amt, -d[0].amt);
+    res.push(`${d[0].p} → ${c[0].p}: SGD ${pay.toFixed(2)}`);
+    c[0].amt -= pay;
+    d[0].amt += pay;
+    if (c[0].amt < 0.01) c.shift();
+    if (d[0].amt > -0.01) d.shift();
+  }
+
+  document.getElementById("settle").innerHTML =
+    "<strong>Settle Up:</strong><br>" + res.join("<br>");
+}
+
+// 🔥 REALTIME SYNC
+db.channel('bills')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'bills' }, () => {
+    loadBills();
+  })
+  .subscribe();
+
+loadBills();
+</script>
+
+</body>
+</html>
