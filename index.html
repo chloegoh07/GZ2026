@@ -1,56 +1,375 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bill Tracker</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.0.0/supabase.min.js"></script>
-    <script>
-        // Supabase Initialization
-        const supabaseUrl = 'https://wwcnhaummenjhpmndwoq.supabase.co';
-        const supabaseKey = 'sb_publishable_-Cb0_t8Bzu4y0e0xWYF1oA_-Jwa7b80';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bill Splitter Pro+</title>
 
-        // Function to handle the Submit of the Bill Tracker
-        async function submitBill() {
-            // Your implementation for submitting bill goes here
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f7f7f7;
+  display: flex;
+  justify-content: center;
+  padding: 30px;
+}
 
-            // Display a status message to the user
-            document.getElementById('status').innerText = 'Bill submitted!';
-        }
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  width: 360px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
 
-        // Function to load all bills
-        async function loadBills() {
-            // Fetch bills from Supabase or localStorage
-        }
+h2 { margin-bottom: 12px; }
 
-        // Clear the form
-        function clearForm() {
-            document.getElementById('billForm').reset();
-        }
+label {
+  font-size: 13px;
+  font-weight: 600;
+}
 
-        // Function to handle Select All for checkboxes
-        function toggleSelectAll(checkbox) {
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach((cb) => { cb.checked = checkbox.checked; });
-        }
+.subtext {
+  font-size: 12px;
+  color: #777;
+  margin-bottom: 10px;
+}
 
-        // Other functionality like settlement calculation and WhatsApp export goes here.
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  box-sizing: border-box;
+}
 
-        window.onload = function() {
-            loadBills();
-        };
-    </script>
+.checkbox-group {
+  margin-bottom: 12px;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 14px;
+  font-weight: normal;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+
+.checkbox-group input {
+  margin-right: 10px;
+  width: auto;
+}
+
+.select-all-btn {
+  background: #f0f0f0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  font-size: 13px;
+  margin-bottom: 10px;
+  width: auto;
+}
+
+.select-all-btn:hover {
+  background: #e0e0e0;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: black;
+  color: white;
+  font-weight: bold;
+  margin-top: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button:hover {
+  background: #333;
+}
+
+.section {
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.status {
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+.status.success {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.error {
+  background: #f8d7da;
+  color: #721c24;
+}
+</style>
 </head>
+
 <body>
-    <h1>Bill Tracker</h1>
-    <form id="billForm">
-        <input type="text" placeholder="Enter Bill Details" required>
-        <button type="button" onclick="submitBill()">Submit</button>
-        <button type="button" onclick="clearForm()">Clear</button>
-        <input type="checkbox" onclick="toggleSelectAll(this)"> Select All
-    </form>
-    <div id="status"></div>
-    <div id="billsList"></div>
+<div class="card">
+
+<h2>💸 Split Bill</h2>
+
+<label>Amount (SGD)</label>
+<div class="subtext">
+If you wish to log this expenditure in RMB as a placeholder, please annotate currency clearly (but please just try to log in SGD la!)
+</div>
+<input type="number" id="amount" step="0.01" min="0">
+
+<label>Bill title</label>
+<input type="text" id="title" placeholder="e.g., Lunch, Groceries">
+
+<label>Paid by</label>
+<select id="paidBy" onchange="autoSelectPayer()"></select>
+
+<label>Bill to</label>
+<div class="subtext">
+Select everyone whom you want to bill to/split this bill with, please rem to check your own name if you are part of the sharing.
+</div>
+
+<button class="select-all-btn" onclick="toggleSelectAll()">📋 Select All / Deselect All</button>
+
+<div class="checkbox-group" id="billTo"></div>
+
+<div class="checkbox-group">
+  <label>
+    <input type="checkbox" id="excludeSelf">
+    Exclude payer from split
+  </label>
+</div>
+
+<button onclick="addBill()">Add Bill</button>
+<button onclick="exportWhatsApp()">Export to WhatsApp</button>
+<button onclick="clearData()">Clear All Data</button>
+
+<div id="status"></div>
+<div class="section" id="latest"></div>
+<div class="section" id="balances"></div>
+<div class="section" id="settle"></div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6"></script>
+<script>
+// Supabase Configuration
+const SUPABASE_URL = 'https://wwcnhaummenjhpmndwoq.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_-Cb0_t8Bzu4y0e0xWYF1oA_-Jwa7b80';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const people = ["Josh","Chloe","CK","Janice","Travis","Rach","Emma","Weng"];
+
+let bills = JSON.parse(localStorage.getItem("bills")) || [];
+let balances = JSON.parse(localStorage.getItem("balances")) || {};
+
+// Initialize balances
+people.forEach(p => {
+  if (!(p in balances)) balances[p] = 0;
+});
+
+// Populate dropdown
+const paidByEl = document.getElementById("paidBy");
+paidByEl.innerHTML = '<option value="">Select</option>' +
+  people.map(p => `<option>${p}</option>`).join("");
+
+// Populate checkboxes
+const billToEl = document.getElementById("billTo");
+billToEl.innerHTML = people.map(p =>
+  `<label><input type="checkbox" value="${p}"> ${p}</label>`
+).join("");
+
+// Auto-select payer
+function autoSelectPayer() {
+  const payer = paidByEl.value;
+  document.querySelectorAll('#billTo input').forEach(cb => {
+    if (cb.value === payer) cb.checked = true;
+  });
+}
+
+// Toggle select all checkboxes
+function toggleSelectAll() {
+  const checkboxes = document.querySelectorAll('#billTo input[type="checkbox"]');
+  const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+  checkboxes.forEach(cb => cb.checked = !allChecked);
+}
+
+function showStatus(message, type = 'success') {
+  const statusEl = document.getElementById('status');
+  statusEl.innerHTML = `<div class="status ${type}">${message}</div>`;
+  setTimeout(() => {
+    statusEl.innerHTML = '';
+  }, 3000);
+}
+
+async function addBill() {
+  const amount = parseFloat(document.getElementById("amount").value);
+  const title = document.getElementById("title").value || "Untitled";
+  const payer = paidByEl.value;
+  const excludeSelf = document.getElementById("excludeSelf").checked;
+
+  const selected = Array.from(document.querySelectorAll('#billTo input:checked'))
+    .map(cb => cb.value);
+
+  if (!amount || !payer || selected.length === 0) {
+    showStatus("Fill all fields pls 🙃", 'error');
+    return;
+  }
+
+  let splitGroup = [...selected];
+  if (excludeSelf) {
+    splitGroup = splitGroup.filter(p => p !== payer);
+  }
+
+  if (splitGroup.length === 0) {
+    showStatus("No one to split with!", 'error');
+    return;
+  }
+
+  const share = amount / splitGroup.length;
+
+  splitGroup.forEach(p => {
+    if (p !== payer) {
+      balances[p] -= share;
+      balances[payer] += share;
+    }
+  });
+
+  const billData = {title, payer, amount, splitGroup, created_at: new Date().toISOString()};
+  bills.push(billData);
+
+  // Save to localStorage
+  save();
+
+  // Try to save to Supabase (non-blocking)
+  try {
+    await supabase
+      .from('bills')
+      .insert([billData]);
+    showStatus("✅ Bill added and synced!", 'success');
+  } catch (error) {
+    showStatus("✅ Bill added (offline mode)", 'success');
+  }
+
+  // Clear form
+  document.getElementById("amount").value = '';
+  document.getElementById("title").value = '';
+  paidByEl.value = '';
+  document.querySelectorAll('#billTo input').forEach(cb => cb.checked = false);
+  document.getElementById("excludeSelf").checked = false;
+
+  render();
+}
+
+function save() {
+  localStorage.setItem("bills", JSON.stringify(bills));
+  localStorage.setItem("balances", JSON.stringify(balances));
+}
+
+function render() {
+  if (bills.length === 0) {
+    document.getElementById("latest").innerHTML = '';
+    document.getElementById("balances").innerHTML = '';
+    document.getElementById("settle").innerHTML = '';
+    return;
+  }
+
+  const last = bills[bills.length - 1];
+  document.getElementById("latest").innerHTML =
+    `<strong>Latest:</strong><br>${last.title} — ${last.payer} paid SGD ${last.amount.toFixed(2)}`;
+
+  let balHTML = "<strong>Balances:</strong><br>";
+  let hasBalance = false;
+  for (let p in balances) {
+    if (Math.abs(balances[p]) > 0.01) {
+      hasBalance = true;
+      const displayAmount = balances[p] > 0 ? `+${balances[p].toFixed(2)}` : balances[p].toFixed(2);
+      balHTML += `${p}: SGD ${displayAmount}<br>`;
+    }
+  }
+  if (!hasBalance) {
+    balHTML = "<strong>Balances:</strong><br>All settled! 🎉";
+  }
+  document.getElementById("balances").innerHTML = balHTML;
+
+  computeSettlement();
+}
+
+function computeSettlement() {
+  let creditors = [];
+  let debtors = [];
+
+  for (let p in balances) {
+    let amt = parseFloat(balances[p].toFixed(2));
+    if (amt > 0) creditors.push({name: p, amt});
+    if (amt < 0) debtors.push({name: p, amt});
+  }
+
+  let settlements = [];
+
+  while (creditors.length && debtors.length) {
+    let c = creditors[0];
+    let d = debtors[0];
+
+    let pay = Math.min(c.amt, -d.amt);
+
+    settlements.push(`${d.name} → ${c.name}: SGD ${pay.toFixed(2)}`);
+
+    c.amt -= pay;
+    d.amt += pay;
+
+    if (c.amt < 0.01) creditors.shift();
+    if (d.amt > -0.01) debtors.shift();
+  }
+
+  document.getElementById("settle").innerHTML =
+    "<strong>Settle Up:</strong><br>" + (settlements.join("<br>") || "All settled 🎉");
+}
+
+function exportWhatsApp() {
+  let text = "💸 Bill Summary\n\n";
+
+  bills.forEach(b => {
+    text += `${b.title} — ${b.payer} paid SGD ${b.amount}\n`;
+  });
+
+  text += "\nSettle Up:\n";
+  const settleText = document.getElementById("settle").innerText;
+  if (settleText) {
+    text += settleText.replace("Settle Up:", "").trim();
+  }
+
+  window.open("https://wa.me/?text=" + encodeURIComponent(text));
+}
+
+function clearData() {
+  if (confirm("Are you sure you want to clear all bills and balances? This cannot be undone.")) {
+    bills = [];
+    people.forEach(p => {
+      balances[p] = 0;
+    });
+    save();
+    render();
+    showStatus("✅ All data cleared", 'success');
+  }
+}
+
+// Initial render
+render();
+</script>
+
 </body>
 </html>
