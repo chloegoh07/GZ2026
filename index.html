@@ -4,52 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bill Tracker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.0.0/supabase.min.js"></script>
+    <script>
+        // Supabase Initialization
+        const supabaseUrl = 'https://wwcnhaummenjhpmndwoq.supabase.co';
+        const supabaseKey = 'sb_publishable_-Cb0_t8Bzu4y0e0xWYF1oA_-Jwa7b80';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Function to handle the Submit of the Bill Tracker
+        async function submitBill() {
+            // Your implementation for submitting bill goes here
+
+            // Display a status message to the user
+            document.getElementById('status').innerText = 'Bill submitted!';
+        }
+
+        // Function to load all bills
+        async function loadBills() {
+            // Fetch bills from Supabase or localStorage
+        }
+
+        // Clear the form
+        function clearForm() {
+            document.getElementById('billForm').reset();
+        }
+
+        // Function to handle Select All for checkboxes
+        function toggleSelectAll(checkbox) {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach((cb) => { cb.checked = checkbox.checked; });
+        }
+
+        // Other functionality like settlement calculation and WhatsApp export goes here.
+
+        window.onload = function() {
+            loadBills();
+        };
+    </script>
 </head>
 <body>
     <h1>Bill Tracker</h1>
-    <div id="billTo">
-        <h2>Bill To</h2>
-        <input type="checkbox" id="selectAll" onclick="toggleSelectAll()"> Select All
-        <ul id="billsList">
-            <!-- Bills will be populated here -->
-        </ul>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/1.35.6/supabase.min.js"></script>
-    <script>
-        // Supabase initialization
-        const { createClient } = supabase;
-        const supabaseUrl = 'https://your-supabase-project-url.supabase.co';
-        const supabaseKey = 'your-supabase-anon-key';
-        const supabase = createClient(supabaseUrl, supabaseKey);
-
-        // Function to load bills from Supabase
-        async function loadBills() {
-            const { data, error } = await supabase
-                .from('bills')
-                .select('*');
-            if (error) console.error('Error loading bills:', error);
-            else populateBills(data);
-        }
-
-        function populateBills(bills) {
-            const billsList = document.getElementById('billsList');
-            billsList.innerHTML = '';
-            bills.forEach(bill => {
-                const li = document.createElement('li');
-                li.textContent = bill.name;
-                billsList.appendChild(li);
-            });
-        }
-
-        function toggleSelectAll() {
-            const selectAllCheckbox = document.getElementById('selectAll');
-            const billCheckboxes = document.querySelectorAll('#billsList input[type="checkbox"]');
-            billCheckboxes.forEach(checkbox => checkbox.checked = selectAllCheckbox.checked);
-        }
-
-        // Load bills when the page is ready
-        window.onload = loadBills;
-        // Additional functionality can go here, including localStorage backup as needed
-    </script>
+    <form id="billForm">
+        <input type="text" placeholder="Enter Bill Details" required>
+        <button type="button" onclick="submitBill()">Submit</button>
+        <button type="button" onclick="clearForm()">Clear</button>
+        <input type="checkbox" onclick="toggleSelectAll(this)"> Select All
+    </form>
+    <div id="status"></div>
+    <div id="billsList"></div>
 </body>
 </html>
