@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>.35.6"></script>
+<style>
+body {font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f7f7f7; display: flex; justify-content: center; padding: 30px;}
+.card {background: white; padding: 20px; border-radius: 16px; width: 360px; box-shadow: 0 10px 25px rgba(0,0,0,0.08);}
+h2 {margin-bottom: 12px;}
+label {font-size: 13px; font-weight: 600;}
+.subtext {font-size: 12px; color: #777; margin-bottom: 10px;}
+input, select {width: 100%; padding: 10px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px; box-sizing: border-box;}
+.checkbox-group {margin-bottom: 12px;}
+.checkbox-group label {display: flex; align-items: center; font-size: 14px; margin-bottom: 6px; cursor: pointer;}
+.checkbox-group input {margin-right: 10px; width: auto;}
+.select-all-btn {background: #f0f0f0; padding: 8px 12
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bill Splitter Pro+</title>
@@ -13,9 +24,7 @@ label {font-size: 13px; font-weight: 600;}
 .subtext {font-size: 12px; color: #777; margin-bottom: 10px;}
 input, select {width: 100%; padding: 10px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px; box-sizing: border-box;}
 .checkbox-group {margin-bottom: 12px;}
-.checkbox-group label {display: flex; align-items: center; font-size: 14px; margin-bottom: 6px; cursor: pointer;}
-.checkbox-group input {margin-right: 10px; width: auto;}
-.select-all-btn {background: #f0f0f0; padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd; cursor: pointer; font-size: 13px; margin-bottom: 10px; width: auto;}
+.checkbox-group label {display: flex; align-items: center; font-sizepx; border-radius: 6px; border: 1px solid #ddd; cursor: pointer; font-size: 13px; margin-bottom: 10px; width: auto;}
 .select-all-btn:hover {background: #e0e0e0;}
 button {width: 100%; padding: 12px; border-radius: 10px; border: none; background: black; color: white; font-weight: bold; margin-top: 6px; cursor: pointer;}
 button:hover {background: #333;}
@@ -36,7 +45,26 @@ button:hover {background: #333;}
 <input type="text" id="title" placeholder="e.g., Lunch, Groceries">
 
 <label>Amount (SGD)</label>
-<div class="subtext">If you wish to log this expenditure in RMB as a placeholder, please annotate currency clearly (but please just try to log in SGD la!)</div>
+<div class="subtext">If: 14px; margin-bottom: 6px; cursor: pointer;}
+.checkbox-group input {margin-right: 10px; width: auto;}
+.select-all-btn {background: #f0f0f0; padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd; cursor: pointer; font-size: 13px; margin-bottom: 10px; width: auto;}
+.select-all-btn:hover {background: #e0e0e0;}
+button {width: 100%; padding: 12px; border-radius: 10px; border: none; background: black; color: white; font-weight: bold; margin-top: 6px; cursor: pointer;}
+button:hover {background: #333;}
+.btn-danger {background: #dc3545;}
+.btn-danger:hover {background: #c82333;}
+.section {margin-top: 16px; font-size: 14px;}
+.status {padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 12px;}
+.status.success {background: #d4edda; color: #155724;}
+.status.error {background: #f8d7da; color: #721c24;}
+.admin-section {margin-top: 20px; padding-top: 20px; border-top: 2px solid #ddd;}
+</style>
+</head>
+<body>
+<div class="card">
+<h2>💸 Split Bill</h2>
+
+<label> you wish to log this expenditure in RMB as a placeholder, please annotate currency clearly (but please just try to log in SGD la!)</div>
 <input type="number" id="amount" step="0.01" min="0">
 
 <label>Paid by</label>
@@ -47,6 +75,37 @@ button:hover {background: #333;}
 <button class="select-all-btn" onclick="toggleSelectAll()">📋 Select All / Deselect All</button>
 <div class="checkbox-group" id="billTo"></div>
 <div class="checkbox-group"><label><input type="checkbox" id="excludeSelf"> Exclude payer from split</label></div>
+
+<button onclick="addBill()">Add Bill</button>Bill title</label>
+<input type="text" id="title" placeholder="e.g., Lunch, Groceries">
+
+<label>Amount (SGD)</label>
+<div class="subtext">If you wish to log this expenditure in RMB as a placeholder, please annotate currency clearly (but please just try to log in SGD la!)</div>
+<input type="number" id="amount" step="0.01" min="0">
+
+<label>Paid by</label>
+<select id="paidBy" onchange="autoSelectPayer()"></select>
+
+<label>Bill to</label>
+<div class="subtext">Select everyone whom you want to bill to/split this bill with, please rem to check your own name if you are part of the sharing.</div>
+<button class="select-all-btn" onclick="toggleSelectAll()">📋 Select All / Deselect All</button>
+<div class="checkbox-group" id="billTo"></div>
+<div
+<button onclick="downloadHistoryLog()">📥 Download History Log</button>
+<div id="status"></div>
+<div class="section" id="latest"></div>
+
+<div class="admin-section">
+<h3>🔐 Admin Panel</h3>
+<button class="btn-danger" onclick="promptAdminClearData()">🗑️ Clear All Data (Admin Only)</button>
+</div>
+
+</div>
+<script>
+// Supabase Configuration
+const SUPABASE_URL = 'https://wwcnhaummenjhpmndwoq.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_-Cb0_t8Bzu4y0e0xWYF1oA_-Jwa7b80';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); class="checkbox-group"><label><input type="checkbox" id="excludeSelf"> Exclude payer from split</label></div>
 
 <button onclick="addBill()">Add Bill</button>
 <button onclick="downloadHistoryLog()">📥 Download History Log</button>
@@ -62,8 +121,7 @@ button:hover {background: #333;}
 <script>
 // Supabase Configuration
 const SUPABASE_URL = 'https://wwcnhaummenjhpmndwoq.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_-Cb0_t8Bzu4y0e0xWYF1oA_-Jwa7b80';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_KEY = 'sb_publishable_-Cb0_t8Bzu4y0e0xWYF1oA_-Jwa
 
 const people = ["Josh","Chloe","CK","Janice","Travis","Rach","Emma","Weng"];
 const ADMIN_PASSWORD = "Chloe123";
@@ -89,7 +147,33 @@ async function loadBillsFromSupabase() {
     render();
   } catch (error) {
     console.error('Error loading bills:', error);
-    showStatus('⚠️ Could not sync with cloud. Using local data.', 'error');
+    showStatus('⚠️ Could not sync with cloud. Using local data.7b80';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const people = ["Josh","Chloe","CK","Janice","Travis","Rach","Emma","Weng"];
+const ADMIN_PASSWORD = "Chloe123";
+let bills = [];
+let balances = {};
+
+people.forEach(p => {balances[p] = 0;});
+document.getElementById("paidBy").innerHTML = '<option value="">Select</option>' + people.map(p => `<option>${p}</option>`).join("");
+document.getElementById("billTo").innerHTML = people.map(p => `<label><input type="checkbox" value="${p}"> ${p}</label>`).join("");
+
+// Load bills from Supabase on startup
+async function loadBillsFromSupabase() {
+  try {
+    const { data, error } = await supabase
+      .from('bills')
+      .select('*')
+      .order('created_at', { ascending: true });
+    
+    if (error) throw error;
+    
+    bills = data || [];
+    recalculateBalances();
+    render();
+  } catch (error) {
+    console.error('Error', 'error');
     loadFromLocalStorage();
   }
 }
@@ -99,9 +183,9 @@ function recalculateBalances() {
   bills.forEach(bill => {
     const share = bill.amount / bill.split_group.length;
     bill.split_group.forEach(person => {
-      if (person !== bill.paid_by) {
+      if (person !== bill.payer) {
         balances[person] -= share;
-        balances[bill.paid_by] += share;
+        balances[bill.payer] += share;
       }
     });
   });
@@ -118,7 +202,34 @@ function toggleSelectAll() {const checkboxes = document.querySelectorAll('#billT
 function showStatus(message, type = 'success') {const statusEl = document.getElementById('status'); statusEl.innerHTML = `<div class="status ${type}">${message}</div>`; setTimeout(() => {statusEl.innerHTML = '';}, 3000);}
 
 async function addBill() {
-  const amount = parseFloat(document.getElementById("amount").value);
+  const amount loading bills:', error);
+    showStatus('⚠️ Could not sync with cloud. Using local data.', 'error');
+    loadFromLocalStorage();
+  }
+}
+
+function recalculateBalances() {
+  people.forEach(p => {balances[p] = 0;});
+  bills.forEach(bill => {
+    const share = bill.amount / bill.split_group.length;
+    bill.split_group.forEach(person => {
+      if (person !== bill.payer) {
+        balances[person] -= share;
+        balances[bill.payer] += share;
+      }
+    });
+  });
+}
+
+function loadFromLocalStorage() {
+  bills = JSON.parse(localStorage.getItem("bills")) || [];
+  balances = JSON.parse(localStorage.getItem("balances")) || {};
+  people.forEach(p => {if (!(p in balances)) balances[p] = 0;});
+}
+
+function autoSelectPayer() {const payer = document.getElementById("paidBy").value; document.querySelectorAll('#billTo input').forEach(cb => {if (cb.value === payer) cb.checked = true;});}
+function toggleSelectAll() {const checkboxes = document.querySelectorAll('#billTo input'); const allChecked = Array.from(checkboxes).every(cb => cb.checked); checkboxes.forEach(cb => cb.checked = !allChecked);}
+function showStatus(message, type = 'success') {const statusEl = document.getElementById(' = parseFloat(document.getElementById("amount").value);
   const title = document.getElementById("title").value || "Untitled";
   const payer = document.getElementById("paidBy").value;
   const excludeSelf = document.getElementById("excludeSelf").checked;
@@ -132,7 +243,7 @@ async function addBill() {
   
   const billData = {
     title: title,
-    paid_by: payer,
+    payer: payer,
     amount: amount,
     split_group: splitGroup,
     created_at: new Date().toISOString()
@@ -148,6 +259,65 @@ async function addBill() {
     bills.push(billData);
     recalculateBalances();
     showStatus("✅ Bill added & synced!", 'success');
+  } catch (error) {
+    console.error('Error saving bill:', error);
+    showStatus("✅ Bill added locally (sync pending)", 'success');
+    billsstatus'); statusEl.innerHTML = `<div class="status ${type}">${message}</div>`; setTimeout(() => {statusEl.innerHTML = '';}, 3000);}
+
+async function addBill() {
+  const amount = parseFloat(document.getElementById("amount").value);
+  const title = document.getElementById("title").value || "Untitled";
+  const payer = document.getElementById("paidBy").value;
+  const excludeSelf = document.getElementById("excludeSelf").checked;
+  const selected = Array.from(document.querySelectorAll('#billTo input:checked')).map(cb => cb.value);
+  
+  if (!amount || !payer || selected.length === 0) {showStatus("Fill all fields pls 🙃", 'error'); return;}
+  
+  let splitGroup = [...selected];
+  if (excludeSelf) {splitGroup = splitGroup.filter(p => p !== payer);}
+  if (splitGroup.length === 0) {showStatus("No one to split with!", 'error'); return;}
+  
+  const billData = {
+    title: title,
+    payer: payer,
+    amount: amount,
+    split_group: splitGroup,
+    created_at: new Date().toISOString()
+  };
+  
+  try {
+    const { data, error } = await supabase
+      .from('bills')
+      .insert([billData]);
+    
+    if (error) throw error;
+    
+    bills.push(billData);
+    recalculateBalances();
+    showStatus("✅ Bill added & syn.push(billData);
+    recalculateBalances();
+  }
+  
+  localStorage.setItem("bills", JSON.stringify(bills));
+  localStorage.setItem("balances", JSON.stringify(balances));
+  document.getElementById("amount").value = '';
+  document.getElementById("title").value = '';
+  document.getElementById("paidBy").value = '';
+  document.querySelectorAll('#billTo input').forEach(cb => cb.checked = false);
+  document.getElementById("excludeSelf").checked = false;
+  render();
+}
+
+function render() {
+  if (bills.length === 0) {document.getElementById("latest").innerHTML = ''; return;}
+  const last = bills[bills.length - 1];
+  document.getElementById("latest").innerHTML = `<strong>Latest:</strong><br>${last.title} — ${last.payer} paid SGD ${last.amount.toFixed(2)}`;
+}
+
+function downloadHistoryLog() {
+  if (bills.length === 0) {showStatus("No bills to download!", 'error'); return;}
+  let csvContent = "BILL SPLITTER HISTORY LOG\nGenerated: " + new Date().toLocaleString() + "\n\n=== DETAILED BILL ENTRIES ===\nBill Title,Paid By,Amount (SGD),Split With,Share Per Person,Date & Time\n";
+  bills.forEach((ced!", 'success');
   } catch (error) {
     console.error('Error saving bill:', error);
     showStatus("✅ Bill added locally (sync pending)", 'success');
@@ -168,84 +338,10 @@ async function addBill() {
 function render() {
   if (bills.length === 0) {document.getElementById("latest").innerHTML = ''; return;}
   const last = bills[bills.length - 1];
-  document.getElementById("latest").innerHTML = `<strong>Latest:</strong><br>${last.title} — ${last.paid_by} paid SGD ${last.amount.toFixed(2)}`;
+  document.getElementById("latest").innerHTML = `<strong>Latest:</strong><br>${last.title} — ${last.payer} paid SGD ${last.amount.toFixed(2)}`;
 }
 
 function downloadHistoryLog() {
   if (bills.length === 0) {showStatus("No bills to download!", 'error'); return;}
-  let csvContent = "BILL SPLITTER HISTORY LOG\nGenerated: " + new Date().toLocaleString() + "\n\n=== DETAILED BILL ENTRIES ===\nBill Title,Paid By,Amount (SGD),Split With,Share Per Person,Date & Time\n";
-  bills.forEach((bill) => {
-    const sharePerPerson = (bill.amount / bill.split_group.length).toFixed(2);
-    const splitWith = bill.split_group.join("; ");
-    const dateTime = new Date(bill.created_at).toLocaleString();
-    csvContent += `"${bill.title}",${bill.paid_by},${bill.amount.toFixed(2)},"${splitWith}",${sharePerPerson},${dateTime}\n`;
-  });
-  csvContent += "\n=== SUMMARY: TOTAL AMOUNTS OWED ===\nFrom (Debtor),To (Creditor),Amount (SGD)\n";
-  const totals = {};
-  bills.forEach(bill => {
-    const payer = bill.paid_by;
-    const amount = bill.amount;
-    const sharePerPerson = amount / bill.split_group.length;
-    bill.split_group.forEach(person => {
-      if (person !== payer) {
-        const key = `${person}→${payer}`;
-        if (!totals[key]) {totals[key] = 0;}
-        totals[key] += sharePerPerson;
-      }
-    });
-  });
-  Object.entries(totals).forEach(([key, amount]) => {
-    if (amount > 0.01) {
-      const [from, to] = key.split('→');
-      csvContent += `${from},${to},${amount.toFixed(2)}\n`;
-    }
-  });
-  const element = document.createElement('a');
-  element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent));
-  element.setAttribute('download', 'bill_history_' + new Date().getTime() + '.csv');
-  element.style.display = 'none';
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element);
-  showStatus("✅ History log downloaded!", 'success');
-}
-
-function promptAdminClearData() {
-  const password = prompt("🔐 Enter admin password to clear all data:");
-  if (password === null) return;
-  if (password === ADMIN_PASSWORD) {
-    if (confirm("⚠️ Are you SURE? This will DELETE all bills and reset balances. This CANNOT be undone!")) {
-      clearAllData();
-    }
-  } else {
-    showStatus("❌ Incorrect password. Access denied.", 'error');
-  }
-}
-
-async function clearAllData() {
-  try {
-    const { error } = await supabase
-      .from('bills')
-      .delete()
-      .gt('id', 0);
-    
-    if (error) throw error;
-    
-    bills = [];
-    people.forEach(p => {balances[p] = 0;});
-    localStorage.setItem("bills", JSON.stringify(bills));
-    localStorage.setItem("balances", JSON.stringify(balances));
-    render();
-    showStatus("✅ All data cleared from cloud & local storage!", 'success');
-  } catch (error) {
-    console.error('Error clearing data:', error);
-    showStatus("❌ Error clearing data. Try again.", 'error');
-  }
-}
-
-// Load bills on startup
-loadBillsFromSupabase();
-</script>
-
-</body>
-</html>
+  let csvContent = "BILL SPLITTER HISTORY LOG\nGenerated: " + new Date().toLocaleString() + "\n\n=== DETAILED
+
