@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bill Splitter Pro+</title>
+
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f7f7f7;
+  display: flex;
+  justify-content: center;
+  padding: 30px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  width: 360px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+h2 { margin-bottom: 12px; }
+
+label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.subtext {
+  font-size: 12px;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+
+/* ✅ Checkbox alignment fix */
+.checkbox-group {
+  margin-bottom: 12px;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 14px;
+  font-weight: normal;
+  margin-bottom: 6px;
+}
+
+.checkbox-group input {
+  margin-right: 10px;
+  width: auto;
+}
+
+/* ✅ Toggle aligned + same font */
+.toggle {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+.toggle input {
+  margin-right: 10px;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: black;
+  color: white;
+  font-weight: bold;
+  margin-top: 6px;
+  cursor: pointer;
+}
+
+.section {
+  margin-top: 16px;
+  font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+<div class="card">
+
+<h2>💸 Split Bill</h2>
+
+<label>Amount (SGD)</label>
+<div class="subtext">
+If you wish to log this expenditure in RMB as a placeholder, please annotate currency clearly (but please just try to log in SGD la!)
+</div>
+<input type="number" id="amount">
+
+<label>Bill title</label>
+<input type="text" id="title">
+
+<label>Paid by</label>
+<select id="paidBy" onchange="autoSelectPayer()"></select>
+
+<label>Bill to</label>
+<div class="subtext">
+Select everyone whom you want to bill to/split this bill with, please rem to check your own name if you are part of the sharing.
+</div>
+
+<div class="checkbox-group" id="billTo"></div>
+
+<div class="checkbox-group">
+  <label>
+    <input type="checkbox" id="excludeSelf">
+    Exclude payer from split
+  </label>
+</div>
+
+<button onclick="addBill()">Add Bill</button>
+<button onclick="exportWhatsApp()">Export to WhatsApp</button>
+
+<div class="section" id="latest"></div>
+<div class="section" id="balances"></div>
+<div class="section" id="settle"></div>
+
+</div>
+
+<script>
+const people = ["Josh","Chloe","CK","Janice","Travis","Rach","Emma","Weng"];
+
+let bills = JSON.parse(localStorage.getItem("bills")) || [];
+let balances = JSON.parse(localStorage.getItem("balances")) || {};
+
+// init balances
+people.forEach(p => {
+  if (!(p in balances)) balances[p] = 0;
+});
+
+// populate dropdown
+const paidByEl = document.getElementById("paidBy");
+paidByEl.innerHTML = '<option value="">Select</option>' +
+  people.map(p => `<option>${p}</option>`).join("");
+
+// populate checkboxes
+const billToEl = document.getElementById("billTo");
+billToEl.innerHTML = people.map(p =>
+  `<label><input type="checkbox" value="${p}"> ${p}</label>`
+).join("");
+
+// auto-select payer
+function autoSelectPayer() {
+  const payer = paidByEl.value;
+  document.querySelectorAll('#billTo input').forEach(cb => {
+    if (cb.value === payer) cb.checked = true;
+  });
+}
+
+function addBill() {
+  const amount = parseFloat(document.getElementById("amount").value);
+  const title = document.getElementById("title").value || "Untitled";
+  const payer = paidByEl.value;
+  const excludeSelf = document.getElementById("excludeSelf").checked;
+
+  const selected = Array.from(document.querySelectorAll('#billTo input:checked'))
+    .map(cb => cb.value);
+
+  if (!amount || !payer || selected.length === 0) {
+    alert("Fill all fields pls 🙃");
+    return;
+  }
+
+  let splitGroup = [...selected];
+  if (excludeSelf) {
+    splitGroup = splitGroup.filter(p => p !== payer);
+  }
+
+  const share = amount / splitGroup.length;
+
+  splitGroup.forEach(p => {
+    if (p !== payer) {
+      balances[p] -= share;
+      balances[payer] += share;
+    }
+  });
+
+  bills.push({title, payer, amount, splitGroup});
+
+  save();
+  render();
+}
+
+function save() {
+  localStorage.setItem("bills", JSON.stringify(bills));
+  localStorage.setItem("balances", JSON.stringify(balances));
+}
+
+function render() {
+  if (bills.length === 0) return;
+
+  const last = bills[bills.length - 1];
+  document.getElementById("latest").innerHTML =
+    `<strong>Latest:</strong><br>${last.title} — ${last.payer} paid SGD ${last.amount.toFixed(2)}`;
+
+  let balHTML = "<strong>Balances:</strong><br>";
+  for (let p in balances) {
+    if (Math.abs(balances[p]) > 0.01) {
+      balHTML += `${p}: SGD ${balances[p].toFixed(2)}<br>`;
+    }
+  }
+  document.getElementById("balances").innerHTML = balHTML;
+
+  computeSettlement();
+}
+
+// settle-up logic
+function computeSettlement() {
+  let creditors = [];
+  let debtors = [];
+
+  for (let p in balances) {
+    let amt = parseFloat(balances[p].toFixed(2));
+    if (amt > 0) creditors.push({name: p, amt});
+    if (amt < 0) debtors.push({name: p, amt});
+  }
+
+  let settlements = [];
+
+  while (creditors.length && debtors.length) {
+    let c = creditors[0];
+    let d = debtors[0];
+
+    let pay = Math.min(c.amt, -d.amt);
+
+    settlements.push(`${d.name} → ${c.name}: SGD ${pay.toFixed(2)}`);
+
+    c.amt -= pay;
+    d.amt += pay;
+
+    if (c.amt < 0.01) creditors.shift();
+    if (d.amt > -0.01) debtors.shift();
+  }
+
+  document.getElementById("settle").innerHTML =
+    "<strong>Settle Up:</strong><br>" + (settlements.join("<br>") || "All settled 🎉");
+}
+
+// WhatsApp export
+function exportWhatsApp() {
+  let text = "💸 Bill Summary\n\n";
+
+  bills.forEach(b => {
+    text += `${b.title} — ${b.payer} paid SGD ${b.amount}\n`;
+  });
+
+  text += "\nSettle Up:\n";
+  document.getElementById("settle").innerText.split("\n").forEach(line => {
+    text += line + "\n";
+  });
+
+  window.open("https://wa.me/?text=" + encodeURIComponent(text));
+}
+
+// initial render
+render();
+</script>
+
+</body>
+</html>
